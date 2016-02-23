@@ -11,9 +11,34 @@ var canvas = document.getElementById('canvas'),
       this.id = id;
 
       //defaults
-      this.step = 5;
+      this.step = 10;
       this.w = 20;
       this.h = 20;
+
+      this.move = function(dir) {
+        switch(dir) {
+          case 'up':
+            if(this.y > this.h - this.step) {
+              this.y -= this.step;
+            }
+            break;
+          case 'right':
+            if(this.x < width - (this.w + this.step)) {
+              this.x += this.step;
+            }
+            break;
+          case 'down':
+            if(this.y < width - (this.h + this.step)) {
+              this.y += this.step;
+            }
+            break;
+          case 'left':
+            if(this.x > this.w - this.step) {
+              this.x -= this.step;
+            }
+            break;
+        }
+      };
     },
     players = [],
     myPlayer;
@@ -39,27 +64,31 @@ function drawPlayers() {
 (function draw() {
   context.clearRect(0,0,width,height);
   drawPlayers();
-  setTimeout(draw, 10);
+  requestAnimationFrame(draw);
 })();
 
 // debug
-window.addEventListener('keyup', function(e) {
+window.addEventListener('keydown', function(e) {
   var key = e.keyCode ? e.keyCode : e.which;
   if(key === 87 || key === 38) {
     // move up if w or up arrow
-    myPlayer.y -=  myPlayer.step;
+    myPlayer.move('up');
+    //myPlayer.y -=  myPlayer.step;
   }
   if(key === 65 || key === 37) {
     //move left if a or left arrow
-    myPlayer.x -=  myPlayer.step;
+    //myPlayer.x -=  myPlayer.step;
+    myPlayer.move('left');
   }
   if(key === 83 || key === 40) {
     // move down if s or down arrow
-    myPlayer.y +=  myPlayer.step;
+    //myPlayer.y +=  myPlayer.step;
+    myPlayer.move('down');
   }
   if(key === 68 || key === 39) {
     // move right if d or right arrow
-    myPlayer.x += myPlayer.step;
+    //myPlayer.x += myPlayer.step;
+    myPlayer.move('right');
   }
 });
 
