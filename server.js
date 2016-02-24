@@ -4,7 +4,8 @@ var port = 4004,
     shortid = require('shortid'),
     path = require('path'),
     http = require('http'),
-    app = express();
+    app = express(),
+    WebSocketServer = require('ws').Server;
 
 
 app.set('port', port);
@@ -27,6 +28,8 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 3600000 }));
 
 var server = http.createServer(app);
 server.listen(port);
+
+var wss = new WebSocketServer({server: server});
 
 var sio = io.listen(server);
 
