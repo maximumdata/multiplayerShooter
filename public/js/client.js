@@ -118,11 +118,8 @@ socket.on('onconnected', function (data) {
     });
   });
 
-  socket.on('getPlayersFromServer', function(playersFromServer) {
+  socket.on('getPlayersFromServer', function(playersFromServer, listOfIDs) {
     players = playersFromServer;
-  });
-
-  socket.on('updateListOfUserIDs', function(listOfIDs) {
     updateDomIDs(listOfIDs);
   });
 });

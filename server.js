@@ -52,9 +52,7 @@ sio.sockets.on('connection', function (client) {
   players.push(newPlayerForClient);
   client.emit('onconnected', newPlayerForClient );
 
-  sio.sockets.emit('getPlayersFromServer', players);
-
-  sio.sockets.emit('updateListOfUserIDs', getListOfUserIDsFromArray());
+  sio.sockets.emit('getPlayersFromServer', players, getListOfUserIDsFromArray());
 
   client.on('disconnect', function() {
     for(var x = players.length -1; x>=0; x--) {
@@ -62,13 +60,12 @@ sio.sockets.on('connection', function (client) {
         players.splice(x, 1);
       }
     }
-    sio.sockets.emit('getPlayersFromServer', players);
+    sio.sockets.emit('getPlayersFromServer', players, getListOfUserIDsFromArray());
   });
 
   client.on('playerMoved', function(playerWhoMoved) {
     players[findIndexOfPlayerInArray(playerWhoMoved)] = playerWhoMoved;
-    sio.sockets.emit('getPlayersFromServer', players);
-    sio.sockets.emit('updateListOfUserIDs', getListOfUserIDsFromArray());
+    sio.sockets.emit('getPlayersFromServer', players, getListOfUserIDsFromArray());
   });
 });
 
