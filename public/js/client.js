@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:4004');
+var socket = io.connect();
 // game vars
 var canvas = document.getElementById('canvas'),
     context = canvas.getContext('2d'),
