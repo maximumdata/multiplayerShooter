@@ -1,3 +1,4 @@
+var socket = io.connect('http://localhost:4004');
 // game vars
 var canvas = document.getElementById('canvas'),
     context = canvas.getContext('2d'),
@@ -38,10 +39,11 @@ var canvas = document.getElementById('canvas'),
             }
             break;
         }
+        socket.emit('playerMoved', myPlayer);
       };
     },
     players = [],
-    myPlayer;
+    myPlayer = {};
 
 canvas.height = height;
 canvas.width = width;
@@ -49,23 +51,31 @@ canvas.width = width;
 
 // create a new player
 function newPlayer(data) {
-  myPlayer = new Player(10,30, '#00FF00', 'test', data.id);
-  players.push(myPlayer);
+
 }
 
 // drawing functions
 function drawPlayers() {
   players.forEach(function (thisPlayer) {
-    context.fillStyle = thisPlayer.color;
-    context.fillRect(thisPlayer.x, thisPlayer.y, thisPlayer.w, thisPlayer.h);
+    if(thisPlayer.id != myPlayer.id) {
+      context.fillStyle = thisPlayer.color;
+      context.fillRect(thisPlayer.x, thisPlayer.y, thisPlayer.w, thisPlayer.h);
+    }
   });
+}
+
+function drawMe() {
+  context.fillStyle = myPlayer.color;
+  context.fillRect(myPlayer.x, myPlayer.y, myPlayer.w, myPlayer.h);
 }
 
 (function draw() {
   context.clearRect(0,0,width,height);
+  drawMe();
   drawPlayers();
   requestAnimationFrame(draw);
 })();
+
 
 // debug
 window.addEventListener('keydown', function(e) {
@@ -73,23 +83,20 @@ window.addEventListener('keydown', function(e) {
   if(key === 87 || key === 38) {
     // move up if w or up arrow
     myPlayer.move('up');
-    //myPlayer.y -=  myPlayer.step;
   }
   if(key === 65 || key === 37) {
     //move left if a or left arrow
-    //myPlayer.x -=  myPlayer.step;
     myPlayer.move('left');
   }
   if(key === 83 || key === 40) {
     // move down if s or down arrow
-    //myPlayer.y +=  myPlayer.step;
     myPlayer.move('down');
   }
   if(key === 68 || key === 39) {
     // move right if d or right arrow
-    //myPlayer.x += myPlayer.step;
     myPlayer.move('right');
   }
+
 });
 
 /* keycodes
@@ -99,17 +106,31 @@ s = 83; downArrow = 40
 d = 68; rightArrow = 39
 */
 
-
-
-
-
-var socket = io.connect('/');
-
 socket.on('onconnected', function (data) {
   console.log( 'Connected successfully to the socket.io server. My server side ID is ' + data.id );
-  newPlayer(data);
+  myPlayer = new Player(data.x, data.y, data.color, 'test', data.id);
+  socket.on('playerMovement', function (data) {
+    players.find(function(player, index, array){
+      if(player.id == data.id) {
+        player.x = data.x;
+        player.y = data.y;
+      }
+    });
+  });
+
+  socket.on('getPlayersFromServer', function(playersFromServer) {
+    players = playersFromServer;
+  });
+
+  socket.on('updateListOfUserIDs', function(listOfIDs) {
+    updateDomIDs(listOfIDs);
+  });
 });
 
-socket.on('playerMovement', function (data) {
-  console.log(data);
-});
+function updateDomIDs(listOfIDs) {
+  var outputString = '';
+  for(var i = 0; i < players.length; i++) {
+    outputString += 'User ID: ' + players[i].id + '\nLoc: x - '+players[i].x+', y - '+players[i].y+'\n\n';
+  }
+  document.getElementById('clients').innerText = outputString;
+}
