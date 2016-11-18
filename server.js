@@ -11,7 +11,7 @@ var port = 4004,
 app.set('port', port);
 
 
-app.get('/multi', function (req, res) {
+app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
