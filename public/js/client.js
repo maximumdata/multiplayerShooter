@@ -29,7 +29,7 @@ var canvas = document.getElementById('canvas'),
             }
             break;
           case 'down':
-            if(this.y < width - (this.h + this.step)) {
+            if(this.y < height - (this.h + this.step)) {
               this.y += this.step;
             }
             break;
